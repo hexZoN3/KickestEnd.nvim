@@ -385,5 +385,8 @@ require('message_auto_clear').setup()
 -- When a file is deleted externally, rename all its buffers to "[file]: file removed"
 require 'buffer_deleted'
 
+-- Pastebin
+require('pastebin').setup()
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

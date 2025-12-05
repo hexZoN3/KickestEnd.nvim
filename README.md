@@ -40,6 +40,10 @@ A collection of custom keymaps and configurations for Neovim aimed at improved b
 - Paste from clipboard: `<leader>P` (at cursor, or over selection without yanking it)
 - Paste over selection without yanking replaced text: `<leader>p`
 
+### Pastebin
+
+- Use :Pastebin command to upload the filetext to a server (check lua/pastebin.lua)
+
 ### Diagnostics
 
 - `[d` / `]d` — Navigate diagnostics
