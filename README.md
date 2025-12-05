@@ -42,7 +42,7 @@ A collection of custom keymaps and configurations for Neovim aimed at improved b
 
 ### Pastebin
 
-- Use :Pastebin command to upload the filetext to a server (check lua/pastebin.lua)
+- Use :Pastebin command to upload the filetext to a server and get a URL to it (check lua/pastebin.lua)
 
 ### Diagnostics
 
