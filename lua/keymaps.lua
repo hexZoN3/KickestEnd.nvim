@@ -187,14 +187,13 @@ local function smart_save(force_save_as)
 				local choice = vim.fn.input(string.format("File '%s' already exists! Overwrite? (y/N): ", filename))
 				if choice:lower() == 'y' then
 					overwrite = true
-					break -- overwrite confirmed
+					break
 				else
-					-- Ask again for a new name
 					default_input = filename
 					print 'Choose a different filename.'
 				end
 			else
-				break -- file doesn't exist, safe to write
+				break
 			end
 		end
 		-- If Save As filename is same as current file, just write and return
@@ -215,11 +214,8 @@ local function smart_save(force_save_as)
 		end
 		-- For no-name buffers or Save As, write and set buffer name
 		if current_path == '' then
-			-- No-name buffer: set name first
 			vim.api.nvim_buf_set_name(0, filename)
-			-- >>> filetype detect <<<
 			vim.cmd 'filetype detect'
-			-- Force overwrite if file exists
 			local write_cmd = 'write!'
 			local ok = pcall(function()
 				vim.cmd(write_cmd)
@@ -250,15 +246,10 @@ local function smart_save(force_save_as)
 			local old_buf = vim.api.nvim_get_current_buf()
 			local cursor_pos = vim.api.nvim_win_get_cursor(0)
 			local undo_history = vim.fn.getbufinfo(old_buf)[1].changedtick
-			-- Open the new file in a fresh buffer
 			vim.cmd('edit ' .. vim.fn.fnameescape(filename))
-			-- >>> filetype detect <<<
 			vim.cmd 'filetype detect'
-			-- Restore cursor
 			vim.api.nvim_win_set_cursor(0, cursor_pos)
-			-- Restore undo history
 			vim.cmd 'undojoin'
-			-- Delete the old buffer without saving
 			vim.api.nvim_buf_delete(old_buf, { force = true })
 		end
 		print('Saved as ' .. filename)
@@ -280,11 +271,11 @@ local function smart_save(force_save_as)
 end
 -- Save current buffer
 vim.keymap.set('n', '<leader>w', function()
-	smart_save(false) -- normal save: only ask if buffer is new
+	smart_save(false)
 end, { desc = 'Save buffer' })
 -- Save As a new file
 vim.keymap.set('n', '<leader>W', function()
-	smart_save(true) -- force Save As
+	smart_save(true)
 end, { desc = 'Save As' })
 -- Clear sudo password cache on exit
 vim.api.nvim_create_autocmd('VimLeavePre', {
