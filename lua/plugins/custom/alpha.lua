@@ -83,7 +83,7 @@ return {
 		-- Setup buttons
 		dashboard.section.buttons.val = {
 			-- New file
-			dashboard.button('i', '  New File', '<Cmd>lua new_file_alpha()<CR>'),
+			dashboard.button('i', '  Create new', '<Cmd>lua new_file_alpha()<CR>'),
 			-- Recent files
 			dashboard.button('<leader>?', '  Recent Files', '<Cmd>lua open_telescope_oldfiles()<CR>'),
 			-- Open Neo-tree in current directory
