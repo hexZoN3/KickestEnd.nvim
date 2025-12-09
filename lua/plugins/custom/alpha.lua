@@ -59,19 +59,39 @@ return {
 			vim.cmd 'enew'
 			vim.cmd 'startinsert'
 		end
+		_G.new_file_alpha = new_file_alpha
+
+		-- Recent files button handling
+		_G.open_telescope_oldfiles = function()
+			vim.schedule(function()
+				local keymaps = vim.api.nvim_get_keymap 'n'
+				local leader = vim.g.mapleader or '\\'
+				local target_key = leader .. '?'
+				for _, map in ipairs(keymaps) do
+					if map.lhs == target_key then
+						if map.callback then
+							map.callback()
+						elseif map.rhs then
+							vim.cmd(map.rhs)
+						end
+						return
+					end
+				end
+			end)
+		end
 
 		-- Setup buttons
 		dashboard.section.buttons.val = {
 			-- New file
-			dashboard.button('i', '  New File', new_file_alpha),
-			-- Create new tab and open Alpha
-			dashboard.button('<leader>e', '  New Tab', '<Cmd>tabnew<CR><Cmd>lua require("alpha").start(true)<CR>'),
+			dashboard.button('i', '  New File', '<Cmd>lua new_file_alpha()<CR>'),
+			-- Recent files
+			dashboard.button('<leader>?', '  Recent Files', '<Cmd>lua open_telescope_oldfiles()<CR>'),
 			-- Open Neo-tree in current directory
-			dashboard.button('<leader>n', '  Open Neo-tree', '<Cmd>Neotree toggle float<CR>'),
+			dashboard.button('<leader>n', '  File-tree', '<Cmd>Neotree toggle float<CR>'),
 			-- Close Alpha window or quit Neovim
 			dashboard.button(
 				'<leader>q',
-				'  Exit',
+				'  Close',
 				'<Cmd>lua (function() local wins = vim.api.nvim_tabpage_list_wins(0) if #wins > 1 then vim.cmd("close") else local tab_count = #vim.api.nvim_list_tabpages() if tab_count > 1 then vim.cmd("tabclose") else vim.cmd("qa!") end end end)()<CR>'
 			),
 		}
