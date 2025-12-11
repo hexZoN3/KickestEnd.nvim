@@ -388,28 +388,8 @@ require 'buffer_deleted'
 -- [[ Pastebin ]]
 require('pastebin').setup()
 
--- [[ Autocmd to refresh Alpha when switching to a tab with Alpha buffer ]]
-vim.api.nvim_create_autocmd('TabEnter', {
-	pattern = '*',
-	callback = function()
-		if just_created_tab then
-			just_created_tab = false
-			return
-		end
-		local buf = vim.api.nvim_get_current_buf()
-		local buftype = vim.api.nvim_buf_get_option(buf, 'filetype')
-		if buftype == 'alpha' then
-			vim.schedule(function()
-				local alpha_loaded, alpha = pcall(require, 'alpha')
-				if not alpha_loaded then
-					return
-				end
-				vim.cmd 'enew'
-				alpha.start(true)
-			end)
-		end
-	end,
-})
+-- [[ Refresh Alpha when switching to a tab to replace breakage ]]
+require 'alpha_fix'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

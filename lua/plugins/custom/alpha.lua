@@ -104,7 +104,13 @@ return {
 		vim.api.nvim_create_autocmd('User', {
 			pattern = 'AlphaReady',
 			callback = function()
-				refresh_header()
+				local tab = vim.api.nvim_get_current_tabpage()
+				-- Only refresh if this tab doesn't have stored ASCII
+				if not _G.alpha_tab_ascii[tab] then
+					refresh_header()
+					local dashboard = require 'alpha.themes.dashboard'
+					_G.alpha_tab_ascii[tab] = vim.deepcopy(dashboard.section.header.val)
+				end
 			end,
 		})
 	end,
