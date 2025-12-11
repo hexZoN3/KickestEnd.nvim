@@ -5,8 +5,7 @@ return {
 		local alpha = require 'alpha'
 		local dashboard = require 'alpha.themes.dashboard'
 
-		-- Load random ASCII arts
-		-- Keep track of last shown ASCII art
+		-- ASCII arts
 		local last_ascii = nil
 		-- load a random ASCII art
 		local function load_random_ascii()
@@ -40,16 +39,16 @@ return {
 			local ok, splash = pcall(require, selected)
 			return (ok and type(splash) == 'table') and splash or { 'Alpha' }
 		end
-		-- Function to refresh dashboard header dynamically
+		-- refresh dashboard header dynamically
 		local function refresh_header()
 			dashboard.section.header.val = load_random_ascii()
 			alpha.redraw()
 		end
 
-		-- Function to handle New File logic
+		-- Handle New File button
 		local function new_file_alpha()
-			local listed = vim.fn.getbufinfo { buflisted = 1 } -- all listed buffers
-			local tabs = vim.api.nvim_list_tabpages() -- all tabs
+			local listed = vim.fn.getbufinfo { buflisted = 1 }
+			local tabs = vim.api.nvim_list_tabpages()
 			-- If exactly one listed buffer AND one tab, delete all listed buffers and open insert mode in a new buffer
 			if #listed == 1 and #tabs == 1 then
 				for _, buf in ipairs(listed) do
@@ -61,7 +60,7 @@ return {
 		end
 		_G.new_file_alpha = new_file_alpha
 
-		-- Recent files button handling
+		-- Handle Recents button
 		_G.open_telescope_oldfiles = function()
 			vim.schedule(function()
 				local keymaps = vim.api.nvim_get_keymap 'n'
@@ -83,9 +82,9 @@ return {
 		-- Setup buttons
 		dashboard.section.buttons.val = {
 			-- New file
-			dashboard.button('i', '  Create new', '<Cmd>lua new_file_alpha()<CR>'),
+			dashboard.button('i', '  New', '<Cmd>lua new_file_alpha()<CR>'),
 			-- Recent files
-			dashboard.button('<leader>?', '  Recent Files', '<Cmd>lua open_telescope_oldfiles()<CR>'),
+			dashboard.button('<leader>?', '  Recents', '<Cmd>lua open_telescope_oldfiles()<CR>'),
 			-- Open Neo-tree in current directory
 			dashboard.button('<leader>n', '  File-tree', '<Cmd>Neotree toggle float<CR>'),
 			-- Close Alpha window or quit Neovim
