@@ -367,28 +367,28 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 	pattern = '*',
 })
 
--- Theme
+-- [[ Theme ]]
 require('kanagawa').setup { transparent = true }
 vim.cmd [[colorscheme kanagawa]]
 
--- Custom native-looking tabline
+-- [[ Custom native-looking tabline ]]
 vim.o.showtabline = 1
 local custom_tabline = require 'custom_tabline'
 vim.o.tabline = '%!v:lua.require("custom_tabline").tabline()'
 
--- Auto-create config files for formatters (cross-platform)
+-- [[ Auto-create config files for formatters ]]
 require('formatters_auto_config').setup()
 
--- Auto-clear command line messages on most user actions and on pressing ESC
+-- [[ Auto-clear command line messages on most user actions and on pressing ESC ]]
 require('message_auto_clear').setup()
 
--- When a file is deleted externally, rename all its buffers to "[file]: file removed"
+-- [[ When a file is deleted externally, rename all its buffers to "[file]: file removed" ]]
 require 'buffer_deleted'
 
--- Pastebin
+-- [[ Pastebin ]]
 require('pastebin').setup()
 
--- Autocmd to refresh Alpha when switching to a tab with Alpha buffer
+-- [[ Autocmd to refresh Alpha when switching to a tab with Alpha buffer ]]
 vim.api.nvim_create_autocmd('TabEnter', {
 	pattern = '*',
 	callback = function()
