@@ -1,6 +1,6 @@
 local M = {}
 
-M.upload_url = 'https://user:pass@upload.freedoms4.top/index.php'
+M.upload_url = 'https://user:pass@upload.freedoms4.org/index.php'
 M.auth = 'user:pass'
 
 -- Generate random filename
