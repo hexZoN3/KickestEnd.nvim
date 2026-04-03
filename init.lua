@@ -254,14 +254,7 @@ require('lazy').setup({
 	},
 	-- "gc" to comment visual regions/lines
 	{ 'numToStr/Comment.nvim', event = 'BufReadPre', opts = {} },
-	{
-		-- Highlight, edit, and navigate code
-		'nvim-treesitter/nvim-treesitter',
-		dependencies = {
-			'nvim-treesitter/nvim-treesitter-textobjects',
-		},
-		build = ':TSUpdate',
-	},
+
 	{ --Autopairs
 		'windwp/nvim-autopairs',
 		event = 'InsertEnter',
