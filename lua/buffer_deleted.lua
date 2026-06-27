@@ -44,10 +44,10 @@ local function rename_deleted_buffers()
 			local bufname = vim.api.nvim_buf_get_name(buf)
 
 			if bufname ~= '' and vim.fn.filereadable(bufname) == 0 then
-				-- Skip buffers for files that have never been written (new files)
+				-- Skip buffers for files that have never been written (new files),
+				-- regardless of whether they have unsaved (modified) content
 				local ftime = vim.fn.getftime(bufname)
-				local modified = vim.api.nvim_buf_get_option(buf, 'modified')
-				if ftime == -1 and not modified then
+				if ftime == -1 then
 					goto continue
 				end
 
