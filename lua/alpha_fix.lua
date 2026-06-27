@@ -2,6 +2,33 @@
 
 _G.alpha_tab_ascii = {}
 
+-- Temporarily unlist other buffers so alpha.start(true) isn't skipped
+-- when other tabs have real files open, then restore them after
+local function force_alpha_start()
+	local alpha_loaded, alpha = pcall(require, 'alpha')
+	if not alpha_loaded then
+		return
+	end
+
+	local curbuf = vim.api.nvim_get_current_buf()
+	local restore = {}
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if buf ~= curbuf and vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_get_option(buf, 'buflisted') then
+			table.insert(restore, buf)
+			vim.api.nvim_buf_set_option(buf, 'buflisted', false)
+		end
+	end
+
+	alpha.start(true)
+
+	for _, buf in ipairs(restore) do
+		if vim.api.nvim_buf_is_valid(buf) then
+			vim.api.nvim_buf_set_option(buf, 'buflisted', true)
+		end
+	end
+end
+_G.force_alpha_start = force_alpha_start
+
 local last_tab_count = #vim.api.nvim_list_tabpages()
 
 -- Save ASCII art
@@ -46,7 +73,7 @@ vim.api.nvim_create_autocmd('TabEnter', {
 				local dashboard_loaded, dashboard = pcall(require, 'alpha.themes.dashboard')
 				if not dashboard_loaded then
 					vim.cmd 'enew'
-					alpha.start(true)
+					force_alpha_start()
 					return
 				end
 
@@ -57,19 +84,27 @@ vim.api.nvim_create_autocmd('TabEnter', {
 				end
 
 				vim.cmd 'enew'
-				alpha.start(true)
+				force_alpha_start()
 			end)
 		end
 	end,
 })
 
 -- Clean
+-- <afile> here is the tab's position number, not its handle, so we
+-- can't use it to key into alpha_tab_ascii directly. Prune any cached
+-- handle that's no longer a live tabpage instead.
 vim.api.nvim_create_autocmd('TabClosed', {
 	pattern = '*',
 	callback = function()
-		local closed_tab = tonumber(vim.fn.expand '<afile>')
-		if closed_tab then
-			_G.alpha_tab_ascii[closed_tab] = nil
+		local live_tabs = {}
+		for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+			live_tabs[tab] = true
+		end
+		for cached_tab, _ in pairs(_G.alpha_tab_ascii) do
+			if not live_tabs[cached_tab] then
+				_G.alpha_tab_ascii[cached_tab] = nil
+			end
 		end
 	end,
 })

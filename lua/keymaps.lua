@@ -117,7 +117,7 @@ vim.keymap.set('n', '<leader>th', '<Cmd>vsplit | wincmd l | terminal<CR>i', { no
 vim.keymap.set('n', '<Leader>e', function()
 	vim.cmd 'tabnew' -- create a new tab
 	vim.cmd 'enew' -- create a new empty buffer in it
-	require('alpha').start(true) -- open Alpha dashboard in this new tab
+	_G.force_alpha_start() -- opens Alpha
 end, { noremap = true, silent = true, desc = 'Create a new tab' })
 
 -- [[ Horizontal split with new empty buffer below ]]
