@@ -126,7 +126,6 @@ return {
 			end
 			-- Reuse empty buffer in current tab
 			local wins = vim.api.nvim_tabpage_list_wins(0)
-			local empty_buf = nil
 			for _, win in ipairs(wins) do
 				if vim.api.nvim_win_is_valid(win) then
 					local buf = vim.api.nvim_win_get_buf(win)
@@ -165,11 +164,8 @@ return {
 					end
 				end
 			end
-			if empty_buf then
-				vim.cmd('edit ' .. vim.fn.fnameescape(path))
-			else
-				vim.cmd('tabnew ' .. vim.fn.fnameescape(path))
-			end
+			-- No reusable window found, open in a new tab
+			vim.cmd('tabnew ' .. vim.fn.fnameescape(path))
 			-- Always close Neo-tree window if open
 			for _, win in ipairs(vim.api.nvim_list_wins()) do
 				if vim.api.nvim_win_is_valid(win) then

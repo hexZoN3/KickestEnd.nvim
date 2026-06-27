@@ -311,19 +311,8 @@ return {
 			require('telescope.builtin').git_files {
 				attach_mappings = function(_, map)
 					map('n', 'q', actions.close)
-					local actions = require 'telescope.actions'
-					local action_state = require 'telescope.actions.state'
-
-					local function open_smart(prompt_bufnr)
-						local entry = action_state.get_selected_entry()
-						if not entry then
-							return
-						end
-						pcall(actions.close, prompt_bufnr)
-						smart_open(prompt_bufnr)
-					end
-					map('i', '<CR>', open_smart)
-					map('n', '<CR>', open_smart)
+					map('i', '<CR>', smart_open)
+					map('n', '<CR>', smart_open)
 					return true
 				end,
 			}
