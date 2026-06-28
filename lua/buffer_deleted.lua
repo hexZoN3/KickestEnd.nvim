@@ -5,6 +5,19 @@ local M = {}
 -- List of buffer names or filetypes to skip (UndoTree, Neo-tree, etc.)
 local skip_buffers = { 'undotree', 'neo-tree' }
 
+-- getftime() returns -1 for both never-existed and deleted files
+local confirmed_existed = {}
+vim.api.nvim_create_autocmd({ 'BufReadPost', 'BufWritePost' }, {
+	callback = function(args)
+		confirmed_existed[args.buf] = true
+	end,
+})
+vim.api.nvim_create_autocmd('BufDelete', {
+	callback = function(args)
+		confirmed_existed[args.buf] = nil
+	end,
+})
+
 -- Helper function to determine if a buffer should be skipped in future
 local function should_skip(buf)
 	if not vim.api.nvim_buf_is_valid(buf) then
@@ -44,10 +57,9 @@ local function rename_deleted_buffers()
 			local bufname = vim.api.nvim_buf_get_name(buf)
 
 			if bufname ~= '' and vim.fn.filereadable(bufname) == 0 then
-				-- Skip buffers for files that have never been written (new files),
-				-- regardless of whether they have unsaved (modified) content
+				-- Skip never-written new files, but not deleted ones
 				local ftime = vim.fn.getftime(bufname)
-				if ftime == -1 then
+				if ftime == -1 and not confirmed_existed[buf] then
 					goto continue
 				end
 
@@ -70,6 +82,9 @@ local function rename_deleted_buffers()
 						vim.api.nvim_buf_set_option(buf, 'buflisted', false)
 						vim.api.nvim_buf_set_name(buf, new_name)
 						vim.api.nvim_buf_set_option(buf, 'buflisted', true)
+						-- Prevent accidental :w from creating this file on disk
+						vim.api.nvim_buf_set_option(buf, 'buftype', 'nofile')
+						vim.api.nvim_buf_set_option(buf, 'modifiable', false)
 					end
 				end
 			end
@@ -85,8 +100,8 @@ vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter' }, {
 		if should_skip(buf) then
 			return
 		end
-		-- Force Neovim to check external changes
-		vim.cmd 'checktime'
+		-- Restrict to current buffer; checktime with no arg checks all
+		vim.cmd('checktime ' .. buf)
 		rename_deleted_buffers()
 	end,
 })
