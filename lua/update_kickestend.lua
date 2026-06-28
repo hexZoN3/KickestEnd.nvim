@@ -27,15 +27,21 @@ vim.api.nvim_create_user_command('UpdateKickestEnd', function()
 	local origin_master = vim.fn.systemlist({ 'git', '-C', config_path, 'rev-parse', 'origin/master' })[1]
 	local is_uptodate = (head == origin_master)
 
+	-- Check for local commits not yet pushed to origin/master -- a
+	local ahead_count = tonumber(vim.fn.systemlist({ 'git', '-C', config_path, 'rev-list', '--count', 'origin/master..HEAD' })[1]) or 0
+	local has_unpushed_commits = ahead_count > 0
+
 	-- Skip update if nothing to do
 	if not dirty and is_uptodate then
 		vim.notify('KickestEnd.nvim is already up-to-date with origin/master.', vim.log.levels.INFO)
 		return
 	end
 
-	-- If there are local changes or untracked files, confirm overwrite
-	if dirty then
-		local answer = vim.fn.input 'Local changes or new files detected! Overwrite and delete them? (y/N): '
+	-- If there are local changes, untracked files, or unpushed commits, confirm overwrite
+	if dirty or has_unpushed_commits then
+		local prompt = dirty and 'Local changes or new files detected! Overwrite and delete them? (y/N): '
+			or string.format('%d local commit(s) not on origin/master will be lost! Continue? (y/N): ', ahead_count)
+		local answer = vim.fn.input(prompt)
 		if answer:lower() ~= 'y' then
 			vim.notify('Update cancelled to preserve your modifications.', vim.log.levels.WARN)
 			return
