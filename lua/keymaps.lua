@@ -242,14 +242,12 @@ local function smart_save(force_save_as)
 					return
 				end
 			end
-			-- Preserve cursor position and undo history
+			-- Preserve cursor position
 			local old_buf = vim.api.nvim_get_current_buf()
 			local cursor_pos = vim.api.nvim_win_get_cursor(0)
-			local undo_history = vim.fn.getbufinfo(old_buf)[1].changedtick
 			vim.cmd('edit ' .. vim.fn.fnameescape(filename))
 			vim.cmd 'filetype detect'
 			vim.api.nvim_win_set_cursor(0, cursor_pos)
-			vim.cmd 'undojoin'
 			vim.api.nvim_buf_delete(old_buf, { force = true })
 		end
 		print('Saved as ' .. filename)
