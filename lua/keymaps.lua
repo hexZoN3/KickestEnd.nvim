@@ -744,4 +744,17 @@ for i = 32, 126 do
 		end, { noremap = true, expr = true, silent = true })
 	end
 end
-vim.keymap.set({ 'i', 'v', 't' }, 'q', q_double_escape, { noremap = true, expr = true, silent = true })
+-- Insert/terminal mode:
+vim.keymap.set({ 'i', 't' }, 'q', q_double_escape, { noremap = true, expr = true, silent = true })
+-- Visual mode:
+vim.keymap.set('v', 'q', function()
+	local ok, nr = pcall(vim.fn.getchar)
+	if not ok then
+		return ''
+	end
+	local nextchar = type(nr) == 'number' and vim.fn.nr2char(nr) or nr
+	if nextchar == 'q' then
+		return vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
+	end
+	return 'q' .. nextchar
+end, { noremap = true, expr = true, silent = true })
