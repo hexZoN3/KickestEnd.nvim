@@ -76,4 +76,8 @@ local function replace_snippets()
 		::continue::
 	end
 end
-replace_snippets()
+-- Wait until lazy.nvim has finished loading plugins
+vim.api.nvim_create_autocmd('User', {
+	pattern = 'LazyDone',
+	callback = replace_snippets,
+})
