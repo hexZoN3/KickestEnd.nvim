@@ -39,14 +39,14 @@ vim.opt.rtp:prepend(lazypath)
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
 
--- Disables which-key healthcheck notifications
+-- Disables which-key healthcheck notification
 do
 	local orig_notify = vim.notify
-	vim.notify = function(msg, ...)
-		if type(msg) == 'string' and msg:match 'which%-key' then
-			return -- ignore WhichKey health messages
+	vim.notify = function(msg, level, ...)
+		if type(msg) == 'string' and msg:match 'issues reported with your' and msg:match 'which%-key' then
+			return
 		end
-		return orig_notify(msg, ...)
+		return orig_notify(msg, level, ...)
 	end
 end
 
