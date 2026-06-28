@@ -23,10 +23,13 @@ function M.tabline()
 		local label = i .. ': ' .. vim.fn.fnamemodify(bufname, ':t') .. modified
 
 		-- truncate/pad to fixed tab_width
-		if #label > tab_width - 2 then
-			label = label:sub(1, tab_width - 3) .. '…'
+		if vim.fn.strwidth(label) > tab_width - 2 then
+			while vim.fn.strwidth(label) > tab_width - 3 and #label > 0 do
+				label = label:sub(1, -2)
+			end
+			label = label .. '…'
 		end
-		label = label .. string.rep(' ', tab_width - #label)
+		label = label .. string.rep(' ', tab_width - vim.fn.strwidth(label))
 
 		tabs[i] = (i == current_tab and '%#TabLineSel#' or '%#TabLine#') .. label
 	end
