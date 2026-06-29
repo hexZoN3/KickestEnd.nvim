@@ -325,7 +325,7 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 
 -- Tabs and indentation
-vim.o.expandtab = false -- use spaces instead of tabs
+vim.o.expandtab = false -- use tabs instead of spaces
 vim.o.shiftwidth = 4 -- number of spaces for autoindent
 vim.o.softtabstop = 0 -- number of spaces per Tab in insert mode
 vim.o.tabstop = 4 -- number of spaces a Tab counts for
