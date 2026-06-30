@@ -8,9 +8,6 @@ vim.g.loaded_netrwPlugin = 1
 -- keymaps.lua
 require 'keymaps'
 
--- Copy custom snippets from custom_friendly_snippets folder
-require 'replace_with_custom_snippets'
-
 -- :UpdateKickestEnd command to safely update KickestEnd.nvim config from origin/master
 require 'update_kickestend'
 

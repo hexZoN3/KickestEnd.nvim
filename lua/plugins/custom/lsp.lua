@@ -121,7 +121,45 @@ return {
 			local cmp = require 'cmp'
 			local luasnip = require 'luasnip'
 			require('luasnip.loaders.from_vscode').lazy_load()
-			--require('luasnip.loaders.from_vscode').lazy_load({ paths = { "~/.config/nvim/my_snippets" } })
+			do
+				local parser = require 'luasnip.util.parser'
+				local custom_dir = vim.fn.stdpath 'config' .. '/custom_friendly_snippets'
+				local handle = vim.loop.fs_scandir(custom_dir)
+				if handle then
+					while true do
+						local name, ftype = vim.loop.fs_scandir_next(handle)
+						if not name then
+							break
+						end
+						if ftype == 'file' and name:match '%.json$' then
+							local filetype = name:gsub('%.json$', '')
+							local lines_ok, lines = pcall(vim.fn.readfile, custom_dir .. '/' .. name)
+							if lines_ok then
+								local decode_ok, data = pcall(vim.json.decode, table.concat(lines, '\n'))
+								if decode_ok and type(data) == 'table' then
+									local snippets = {}
+									for snip_name, snip in pairs(data) do
+										local prefixes = type(snip.prefix) == 'table' and snip.prefix or { snip.prefix }
+										local body = type(snip.body) == 'table' and table.concat(snip.body, '\n') or snip.body
+										for _, prefix in ipairs(prefixes) do
+											local parse_ok, parsed =
+												pcall(parser.parse_snippet, { trig = prefix, name = snip_name, desc = snip.description }, body)
+											if parse_ok then
+												table.insert(snippets, parsed)
+											end
+										end
+									end
+									luasnip.add_snippets(filetype, snippets, { default_priority = 2000 })
+								else
+									vim.notify('Failed to decode custom snippet file: ' .. name, vim.log.levels.ERROR)
+								end
+							else
+								vim.notify('Failed to read custom snippet file: ' .. name, vim.log.levels.ERROR)
+							end
+						end
+					end
+				end
+			end
 			luasnip.config.setup {}
 			cmp.setup {
 				snippet = {
