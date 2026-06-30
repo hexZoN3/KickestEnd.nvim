@@ -1,9 +1,12 @@
 -- Manages Alpha refresh when switching and preserves ASCII art
+-- Temporarily unlist other buffers so alpha.start(true) isn't skipped
+-- when other tabs have real files open, then restore them after.
+-- Also bypass argc()>0, which alpha's own should_skip_alpha() checks
+-- first -- this stays true for the whole session if nvim was launched
+-- as `nvim file.txt`, blocking alpha.start(true) everywhere afterward.
 
 _G.alpha_tab_ascii = {}
 
--- Temporarily unlist other buffers so alpha.start(true) isn't skipped
--- when other tabs have real files open, then restore them after
 local function force_alpha_start()
 	local alpha_loaded, alpha = pcall(require, 'alpha')
 	if not alpha_loaded then
@@ -19,7 +22,15 @@ local function force_alpha_start()
 		end
 	end
 
-	alpha.start(true)
+	local orig_argc = vim.fn.argc
+	vim.fn.argc = function(...)
+		return 0
+	end
+	local ok = pcall(alpha.start, true)
+	vim.fn.argc = orig_argc
+	if not ok then
+		vim.notify('Failed to start Alpha', vim.log.levels.ERROR)
+	end
 
 	for _, buf in ipairs(restore) do
 		if vim.api.nvim_buf_is_valid(buf) then
@@ -91,9 +102,6 @@ vim.api.nvim_create_autocmd('TabEnter', {
 })
 
 -- Clean
--- <afile> here is the tab's position number, not its handle, so we
--- can't use it to key into alpha_tab_ascii directly. Prune any cached
--- handle that's no longer a live tabpage instead.
 vim.api.nvim_create_autocmd('TabClosed', {
 	pattern = '*',
 	callback = function()
