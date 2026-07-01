@@ -23,7 +23,7 @@ return {
 	keys = {
 		{ '<leader>sf', desc = '[S]earch [F]iles' },
 		{ '<leader>?', desc = '[?] Find recently opened files' },
-		{ '<leader><leader>', desc = 'Switch to Open Buffers' },
+		{ '<leader>m', desc = 'Switch to Open Buffers' },
 		{ '<leader>/', desc = '[/] Fuzzily search in current buffer' },
 		{ '<leader>s/', desc = '[S]earch [/] in Open Files' },
 		{ '<leader>ss', desc = '[S]earch [S]elect Telescope' },
@@ -225,7 +225,7 @@ return {
 		end, { desc = '[?] Find recently opened files' })
 
 		-- Current buffers for Telescope (switch to already open buffer)
-		vim.keymap.set('n', '<leader><leader>', function()
+		vim.keymap.set('n', '<leader>m', function()
 			require('telescope.builtin').buffers {
 				attach_mappings = function(_, map)
 					map('n', 'q', actions.close)
@@ -301,7 +301,14 @@ return {
 		end
 		vim.keymap.set('n', '<leader>s/', telescope_live_grep_open_files, { desc = '[S]earch [/] in Open Files' })
 
-		vim.keymap.set('n', '<leader>ss', require('telescope.builtin').builtin, { desc = '[S]earch [S]elect Telescope' })
+		vim.keymap.set('n', '<leader>ss', function()
+			require('telescope.builtin').builtin {
+				attach_mappings = function(_, map)
+					map('n', 'q', actions.close)
+					return true
+				end,
+			}
+		end, { desc = '[S]earch [S]elect Telescope' })
 		vim.keymap.set('n', '<leader>gf', function()
 			local is_git_dir = vim.fn.system('git rev-parse --is-inside-work-tree'):gsub('%s+', '') == 'true'
 			if not is_git_dir then

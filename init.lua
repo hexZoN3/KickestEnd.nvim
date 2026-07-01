@@ -49,7 +49,30 @@ end
 
 require('lazy').setup({
 	-- Useful plugin to show you pending keybinds.
-	{ 'folke/which-key.nvim', event = 'VeryLazy', opts = {} },
+	{
+		'folke/which-key.nvim',
+		event = 'VeryLazy',
+		opts = {
+			spec = {
+				{ '<leader>q', group = 'Quit' },
+			},
+		},
+		config = function(_, opts)
+			local wk = require 'which-key'
+			wk.setup(opts)
+			-- Patch which-key's getchar so <Space> acts as a close key,
+			-- since <Esc> is the only hardcoded one and isn't configurable
+			local state = require 'which-key.state'
+			local orig_getchar = state.getchar
+			state.getchar = function()
+				local ok, char = orig_getchar()
+				if ok and char == ' ' then
+					char = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
+				end
+				return ok, char
+			end
+		end,
+	},
 
 	-- Git related plugins
 	{
