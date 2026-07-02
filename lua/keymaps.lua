@@ -447,13 +447,16 @@ end
 -- Keymaps
 vim.keymap.set('n', '<leader>q', function()
 	close_window()
-end, { desc = 'Close window' })
+end, { desc = 'Close' })
+vim.keymap.set('n', '<leader>qq', function()
+	close_window()
+end, { desc = 'Close' })
 vim.keymap.set('n', '<leader>qy', function()
 	close_window 'save'
-end, { desc = 'Save & quit current window' })
+end, { desc = 'Save & close' })
 vim.keymap.set('n', '<leader>qn', function()
 	close_window 'discard'
-end, { desc = 'Discard changes in current window & quit' })
+end, { desc = 'Discard changes & close' })
 
 -- [[ Close Neovim ]]
 -- Function to close Neovim, discarding all unsaved changes if confirmed

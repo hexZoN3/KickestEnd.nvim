@@ -53,8 +53,13 @@ require('lazy').setup({
 		'folke/which-key.nvim',
 		event = 'VeryLazy',
 		opts = {
+			sort = { 'manual', 'group', 'mod' },
 			spec = {
-				{ '<leader>q', group = 'Quit' },
+				{ '<leader>q', group = 'q' },
+				{ '<leader>qq', desc = 'Close' },
+				{ '<leader>qy', desc = 'Save & close' },
+				{ '<leader>qn', desc = 'Discard changes & close' },
+				{ '<leader>qa', desc = 'Quit Neovim' },
 			},
 		},
 		config = function(_, opts)
