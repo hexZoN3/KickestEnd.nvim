@@ -65,13 +65,12 @@ require('lazy').setup({
 		config = function(_, opts)
 			local wk = require 'which-key'
 			wk.setup(opts)
-			-- Patch which-key's getchar so <Space> acts as a close key,
-			-- since <Esc> is the only hardcoded one and isn't configurable
+			-- Patch which-key's getchar so <Space> acts as a close key, since <Esc> is the only hardcoded one and isn't configurable
 			local state = require 'which-key.state'
 			local orig_getchar = state.getchar
 			state.getchar = function()
 				local ok, char = orig_getchar()
-				if ok and char == ' ' then
+				if ok and char == ' ' and state.state and state.state.show then
 					char = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
 				end
 				return ok, char
